@@ -1,1 +1,547 @@
-# Dental-Anatomy-Quiz
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dental Anatomy Final Exam - VIP Edition</title>
+    <style>
+        /* --- Luxury Dark Theme CSS --- */
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Cairo:wght@400;700&family=Inter:wght@300;400;600&display=swap');
+
+        :root {
+            --bg-main: #050505;
+            --bg-panel: rgba(18, 18, 18, 0.85);
+            --gold-light: #F9E596;
+            --gold-primary: #D4AF37;
+            --gold-dark: #997A15;
+            --text-light: #EAEAEA;
+            --text-muted: #888888;
+            --correct-color: #2ECC71;
+            --wrong-color: #E74C3C;
+            --glass-border: rgba(212, 175, 55, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            background-image: radial-gradient(circle at 50% 0%, #1a1a1a 0%, #050505 80%);
+            color: var(--text-light);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            padding: 20px;
+        }
+
+        /* Glassmorphism Panels */
+        .panel {
+            background: var(--bg-panel);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05);
+            display: none;
+            animation: floatIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        @keyframes floatIn {
+            0% { opacity: 0; transform: translateY(30px) scale(0.98); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* 3D Fancy Text */
+        .title-3d {
+            font-family: 'Cinzel', serif;
+            font-size: 3.5rem;
+            text-align: center;
+            color: var(--gold-primary);
+            text-shadow: 
+                0 1px 0 var(--gold-dark), 
+                0 2px 0 var(--gold-dark), 
+                0 3px 0 #7a600d, 
+                0 4px 0 #5c4708, 
+                0 15px 20px rgba(0,0,0,0.8);
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+        }
+
+        .subtitle-arabic {
+            font-family: 'Cairo', sans-serif;
+            text-align: center;
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin-bottom: 40px;
+            direction: rtl;
+        }
+
+        /* Instagram Hidden Link */
+        .ig-link {
+            color: var(--gold-primary);
+            text-decoration: none;
+            font-weight: 700;
+            position: relative;
+            transition: all 0.4s ease;
+        }
+
+        .ig-link::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .ig-link:hover {
+            color: var(--gold-light);
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+        }
+
+        .ig-link:hover::after {
+            transform: scaleX(1);
+        }
+
+        /* Luxury Buttons */
+        .btn-gold {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold-primary), var(--gold-light));
+            background-size: 200% 200%;
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Cinzel', serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);
+            animation: gradientShift 4s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 35px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Quiz UI */
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .progress {
+            font-family: 'Cinzel', serif;
+            color: var(--gold-primary);
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+
+        .timer-box {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.6rem;
+            color: var(--gold-light);
+            background: rgba(212, 175, 55, 0.05);
+            padding: 8px 20px;
+            border-radius: 10px;
+            border: 1px solid var(--glass-border);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .question-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            color: #fff;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 18px 24px;
+            border-radius: 12px;
+            color: var(--text-light);
+            font-size: 1.2rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-btn:hover:not(.disabled) {
+            background: rgba(212, 175, 55, 0.08);
+            border-color: var(--gold-primary);
+            transform: translateX(5px);
+        }
+
+        .option-btn.correct {
+            background: rgba(46, 204, 113, 0.15);
+            border-color: var(--correct-color);
+            color: var(--correct-color);
+            font-weight: bold;
+        }
+
+        .option-btn.wrong {
+            background: rgba(231, 76, 60, 0.15);
+            border-color: var(--wrong-color);
+            color: var(--wrong-color);
+        }
+
+        .option-btn.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* Hint System */
+        .hint-btn {
+            margin-top: 30px;
+            background: transparent;
+            border: 1px dashed var(--gold-dark);
+            color: var(--gold-primary);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .hint-btn:hover {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: var(--gold-primary);
+        }
+
+        .hint-content {
+            margin-top: 15px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.4);
+            border-right: 4px solid var(--gold-primary);
+            border-radius: 12px 0 0 12px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 1.2rem;
+            color: var(--gold-light);
+            direction: rtl;
+            line-height: 1.8;
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        /* Next Button */
+        .next-btn-container {
+            margin-top: 30px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-next {
+            padding: 12px 30px;
+            background: var(--gold-primary);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: none;
+            transition: 0.3s;
+        }
+
+        .btn-next:hover {
+            background: var(--gold-light);
+            box-shadow: 0 0 15px rgba(212,175,55,0.5);
+        }
+
+        /* Academic Text Box */
+        .academic-box {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 30px;
+        }
+
+        .academic-text {
+            font-family: 'Cairo', sans-serif;
+            font-size: 1.15rem;
+            line-height: 2;
+            color: #ccc;
+            direction: rtl;
+            text-align: justify;
+        }
+
+        .academic-text strong {
+            color: var(--gold-primary);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div id="welcome-screen" class="panel active">
+            <h1 class="title-3d">Welcome</h1>
+            <p class="subtitle-arabic">
+                أهلاً وسهلاً بك في الاختبار النهائي الفاخر لمادة تشريح الأسنان.<br>
+                تم تصميم وتطوير هذه الواجهة بجهد برمجي استثنائي بواسطة 
+                <a href="https://www.instagram.com/ounzw/?hl=ar" target="_blank" class="ig-link">@ounzw</a>
+            </p>
+            <button class="btn-gold" onclick="switchPanel('welcome-screen', 'info-screen')">Enter The Realm</button>
+        </div>
+
+        <div id="info-screen" class="panel">
+            <h2 class="title-3d" style="font-size: 2.5rem;">Methodology</h2>
+            <div class="academic-box">
+                <div class="academic-text">
+                    <p>هذا الاختبار ليس مجرد أسئلة عشوائية، بل تم دراسته وتصميمه بطريقة ممنهجة ودقيقة جداً ليحاكي الامتحانات النهائية المتقدمة. تعتمد المنهجية على التدرج المنطقي للصعوبة؛ حيث تبدأ الأسئلة من المستوى السهل الممتنع، صعوداً إلى المستوى التحليلي المتقدم.</p>
+                    <p><strong>المصادر المعتمدة في صياغة الأسئلة:</strong><br>
+                    ١. المنهج الدراسي المقرر بالكامل (١٤ محاضرة أكاديمية دُمجت بعناية).<br>
+                    ٢. أمهات المصادر العالمية في تشريح الأسنان مثل: <i>Wheeler's Dental Anatomy</i> و <i>Major M. Ash</i>.<br>
+                    ٣. الاعتماد المباشر على نمط أسئلة السنوات السابقة (الفاينل) لجامعة الكفيل، جامعة بغداد، وعدة جامعات عراقية رصينة.</p>
+                    <p>يتكون الاختبار من <strong>١٢٠ سؤالاً</strong> باللغة الإنجليزية (٧٥ سؤال MCQ يتبعها ٤٥ سؤال True/False).</p>
+                </div>
+            </div>
+            <button class="btn-gold" onclick="startExam()">Begin Final Exam</button>
+        </div>
+
+        <div id="quiz-screen" class="panel">
+            <div class="quiz-header">
+                <div class="progress">Question <span id="current-q">1</span>/<span id="total-q">120</span></div>
+                <div class="timer-box" id="timer">00:00</div>
+            </div>
+            
+            <div class="question-text" id="question-text">Loading question...</div>
+            
+            <div class="options-grid" id="options-container">
+                </div>
+
+            <button class="hint-btn" id="hint-btn" onclick="toggleHint()">💡 تلميح المساعدة</button>
+            <div class="hint-content" id="hint-box"></div>
+
+            <div class="next-btn-container">
+                <button class="btn-next" id="next-btn" onclick="nextQuestion()">Next Question ❯</button>
+            </div>
+        </div>
+
+        <div id="result-screen" class="panel" style="text-align: center;">
+            <h1 class="title-3d">Exam Concluded</h1>
+            <h2 style="font-family: 'Cinzel', serif; font-size: 2.5rem; color: #fff; margin: 20px 0;">
+                Score: <span id="final-score" style="color: var(--gold-primary);">0</span> / <span id="final-total">120</span>
+            </h2>
+            <p class="subtitle-arabic" style="font-size: 1.5rem; margin-top: 30px;">
+                انتهى الاختبار يا دكتور. هذا هو حصاد جهدك!<br>
+                إذا كانت النتيجة ممتازة، فهذا يعكس تحضيرك الرائع. وإذا كانت أقل من المتوقع، فاعتبرها فرصة ذهبية لمراجعة نقاط الضعف قبل الفاينل الحقيقي.
+            </p>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Core Variables ---
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timerInterval;
+        let secondsElapsed = 0;
+
+        // Panel Switcher
+        function switchPanel(hideId, showId) {
+            document.getElementById(hideId).classList.remove('active');
+            document.getElementById(showId).classList.add('active');
+        }
+
+        // Start Exam Logic
+        function startExam() {
+            if(questionsData.length === 0) {
+                alert("يرجى إضافة كود الأسئلة (البارت الثاني) في أسفل الملف البرمجي أولاً.");
+                return;
+            }
+            switchPanel('info-screen', 'quiz-screen');
+            document.getElementById('total-q').innerText = questionsData.length;
+            startTimer();
+            loadQuestion();
+        }
+
+        // Timer Logic
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                let m = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
+                let s = (secondsElapsed % 60).toString().padStart(2, '0');
+                document.getElementById('timer').innerText = `${m}:${s}`;
+            }, 1000);
+        }
+
+        // Load Question Logic
+        function loadQuestion() {
+            const qData = questionsData[currentQuestionIndex];
+            
+            // Reset UI
+            document.getElementById('current-q').innerText = currentQuestionIndex + 1;
+            document.getElementById('question-text').innerText = qData.question;
+            document.getElementById('hint-box').innerText = qData.hint;
+            document.getElementById('hint-box').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'none';
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = ''; // Clear old options
+
+            // Create option buttons
+            qData.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(index, btn, qData.correctAnswer);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        // Check Answer Logic
+        function checkAnswer(selectedIndex, selectedBtn, correctIndex) {
+            const allButtons = document.querySelectorAll('.option-btn');
+            
+            // Disable all buttons after choice
+            allButtons.forEach(btn => {
+                btn.classList.add('disabled');
+                btn.onclick = null; // Remove click event
+            });
+
+            if (selectedIndex === correctIndex) {
+                selectedBtn.classList.add('correct');
+                score++;
+            } else {
+                selectedBtn.classList.add('wrong');
+                allButtons[correctIndex].classList.add('correct'); // Show correct answer
+            }
+
+            document.getElementById('next-btn').style.display = 'block';
+        }
+
+        // Hint Toggle
+        function toggleHint() {
+            const hintBox = document.getElementById('hint-box');
+            hintBox.style.display = hintBox.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Next Question Logic
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questionsData.length) {
+                loadQuestion();
+            } else {
+                endExam();
+            }
+        }
+
+        // End Exam Logic
+        function endExam() {
+            clearInterval(timerInterval);
+            switchPanel('quiz-screen', 'result-screen');
+            document.getElementById('final-score').innerText = score;
+            document.getElementById('final-total').innerText = questionsData.length;
+        }
+ questionsData = [
+            // --- Multiple Choice Questions (MCQs) ---
+            [span_0](start_span){ type: "mcq", question: "What does the term 'Diphyodont' mean?[span_0](end_span)", options: ["Having different shaped teeth", "Having two sets of teeth", "Having one set of teeth", "Having no teeth"], correctAnswer: 1, hint: "تذكر المصطلح الذي يبدأ بحرف D ويعني 'مجموعتين' (لبنية ودائمية)." },
+            [span_1](start_span){ type: "mcq", question: "How many deciduous teeth are there in the human mouth?[span_1](end_span)", options: ["20", "24", "28", "32"], correctAnswer: 0, hint: "الأسنان اللبنية تفتقر إلى الضواحك وضرس العقل، لذلك عددها أقل من الدائمية." },
+            [span_2](start_span)[span_3](start_span){ type: "mcq", question: "According to the Universal Numbering System, what does the letter 'A' designate?[span_2](end_span)[span_3](end_span)", options: ["Deciduous maxillary right second molar", "Deciduous mandibular left central incisor", "Permanent maxillary right third molar", "Deciduous maxillary right central incisor"], correctAnswer: 0, hint: "في هذا النظام للأسنان اللبنية، نبدأ بالحرف الأول من الفك العلوي الأيمن لأبعد سن." },
+            [span_4](start_span){ type: "mcq", question: "Which teeth are the first permanent teeth to erupt, beginning the transition to permanent dentition?[span_4](end_span)", options: ["Maxillary central incisors", "Mandibular central incisors", "First permanent molars", "First permanent premolars"], correctAnswer: 2, hint: "هذا السن يظهر بعمر 6 سنوات خلف الأسنان اللبنية دون أن يسقط أي سن قبله." },
+            [span_5](start_span){ type: "mcq", question: "What is the anatomical crown defined as?[span_5](end_span)", options: ["The portion visible in the mouth", "The portion covered by cementum", "The portion covered by enamel", "The major bulk of the tooth"], correctAnswer: 2, hint: "التعريف التشريحي يعتمد على نوع النسيج المغطي للتاج." },
+            [span_6](start_span){ type: "mcq", question: "Which of the following tissues makes up the major bulk of the tooth?[span_6](end_span)", options: ["Enamel", "Cementum", "Pulp", "Dentin"], correctAnswer: 3, hint: "النسيج الذي يقع تحت المينا ويشكل الهيكل الأساسي للسن." },
+            [span_7](start_span){ type: "mcq", question: "Where is the cingulum located?[span_7](end_span)", options: ["Buccal surface of posterior teeth", "Cervical third of the lingual surface of anterior teeth", "Occlusal surface of molars", "Root apex"], correctAnswer: 1, hint: "الكلمة اللاتينية التي تعني الحزام (girdle) وموجودة في الأسنان الأمامية فقط." },
+            [span_8](start_span){ type: "mcq", question: "What is formed by the union of two triangular ridges crossing transversely the surface of a posterior tooth?[span_8](end_span)", options: ["Oblique ridge", "Marginal ridge", "Transverse ridge", "Cusp ridge"], correctAnswer: 2, hint: "من اسم السؤال 'crossing transversely'، الجواب موجود في صيغة السؤال." },
+            [span_9](start_span){ type: "mcq", question: "Which teeth feature an oblique ridge?[span_9](end_span)", options: ["Mandibular molars", "Maxillary molars", "Maxillary premolars", "Mandibular premolars"], correctAnswer: 1, hint: "هذا السطح المائل يربط بين نتوئين متقابلين قطرياً في الفك العلوي فقط." },
+            [span_10](start_span){ type: "mcq", question: "What is an irregular depression or concavity on the tooth surface called?[span_10](end_span)", options: ["Sulcus", "Fossa", "Pit", "Mamelon"], correctAnswer: 1, hint: "منخفض غير منتظم، يوجد في السطح اللساني للأمامية والسطح الإطباقي للخلفية." },
+            [span_11](start_span){ type: "mcq", question: "What are the protuberances found on the incisal edge of newly erupted incisors called?[span_11](end_span)", options: ["Tubercles", "Cingulums", "Mamelons", "Fossae"], correctAnswer: 2, hint: "بروزات مؤقتة تتآكل مع مرور الوقت والاستخدام." },
+            [span_12](start_span){ type: "mcq", question: "Which of the following is true about the permanent maxillary lateral incisor compared to the central incisor?[span_12](end_span)", options: ["It has a wider mesio-distal dimension", "The mesio-incisal angle is exactly 90 degrees", "It is smaller in all dimensions except root length", "The root is significantly shorter"], correctAnswer: 2, hint: "القاطع الجانبي أصغر حجماً ولكنه يمتلك جذراً طويلاً مقارنة بتاجه." },
+            [span_13](start_span){ type: "mcq", question: "What is the typical age for the eruption of the permanent maxillary central incisor?[span_13](end_span)", options: ["4-5 years", "7-8 years", "10 years", "11-12 years"], correctAnswer: 1, hint: "يبزغ بعد القاطع المركزي السفلي بفترة قصيرة." },
+            [span_14](start_span){ type: "mcq", question: "Which tooth is the smallest in the permanent dentition?[span_14](end_span)", options: ["Maxillary lateral incisor", "Mandibular central incisor", "Mandibular lateral incisor", "Mandibular first premolar"], correctAnswer: 1, hint: "يقع في منتصف الفك السفلي ويمتاز بتناظر جانبي كبير." },
+            [span_15](start_span)[span_16](start_span){ type: "mcq", question: "Which of the following is a distinguishing feature of the permanent mandibular lateral incisor?[span_15](end_span)[span_16](end_span)", options: ["Perfect bilateral symmetry", "A fan-shaped crown with an incisal edge twisted distally", "It is smaller than the mandibular central incisor", "A very deep lingual fossa"], correctAnswer: 1, hint: "يمتاز بتاج يشبه المروحة وحافة قاطعة تتبع انحناء الفك." },
+            [span_17](start_span){ type: "mcq", question: "Which teeth are considered the longest and strongest in the human mouth?[span_17](end_span)", options: ["Maxillary central incisors", "First molars", "Canines", "Second premolars"], correctAnswer: 2, hint: "تقع في زوايا الفم وتعتبر الأهم في تمزيق الطعام." },
+            [span_18](start_span){ type: "mcq", question: "In the permanent maxillary canine, which slope of the cusp is longer?[span_18](end_span)", options: ["Mesial slope", "Distal slope", "They are equal", "It depends on the individual"], correctAnswer: 1, hint: "الانحدار المبتعد عن خط الوسط يكون أطول." },
+            [span_19](start_span){ type: "mcq", question: "How does the permanent mandibular canine differ from the maxillary canine?[span_19](end_span)", options: ["It is wider mesiodistally", "It has a more developed cingulum", "Its crown is longer and narrower", "Its root is significantly longer"], correctAnswer: 2, hint: "الناب السفلي يبدو أطول وأكثر نحافة من نظيره العلوي." },
+            [span_20](start_span){ type: "mcq", question: "How many roots does the permanent maxillary first premolar typically have?[span_20](end_span)", options: ["One", "Two", "Three", "Four"], correctAnswer: 1, hint: "هذا السن هو الوحيد في الضواحك العلوية الذي غالباً ما يمتلك جذرين (شدقي وحنكي)." },
+            [span_21](start_span){ type: "mcq", question: "In the permanent maxillary first premolar, which cusp is longer?[span_21](end_span)", options: ["The buccal cusp", "The lingual cusp", "They are exactly equal", "The mesial cusp"], correctAnswer: 0, hint: "النتوء المواجه للخد يكون أطول بحوالي 1 ملم." },
+            [span_22](start_span){ type: "mcq", question: "Which is a characteristic of the permanent maxillary second premolar?[span_22](end_span)", options: ["Two distinct roots", "A central developmental groove interrupting the mesial marginal ridge", "Buccal and lingual cusps of equal height", "A larger size than the first premolar"], correctAnswer: 2, hint: "على عكس الضاحك الأول، نتوءات هذا السن متساوية في الارتفاع." },
+            [span_23](start_span){ type: "mcq", question: "What is a unique functional feature of the permanent mandibular first premolar?[span_23](end_span)", options: ["It has three functional cusps", "The buccal cusp is the only occluding cusp", "It resembles a molar in function", "It has widely separated roots"], correctAnswer: 1, hint: "النتوء اللساني فيه صغير جداً لدرجة أنه لا يشارك في الإطباق." },
+            [span_24](start_span){ type: "mcq", question: "The permanent mandibular second premolar most commonly has how many cusps?[span_24](end_span)", options: ["One or two", "Two or three", "Three or four", "Always four"], correctAnswer: 1, hint: "يأتي بنسختين: إما نتوء لساني واحد أو نتوءين لسانيين بالإضافة للشدقي." },
+            [span_25](start_span)[span_26](start_span){ type: "mcq", question: "What is the typical occlusal shape of the 3-cusp type mandibular second premolar?[span_25](end_span)[span_26](end_span)", options: ["Oval with an H-shaped groove", "Square with a Y-shaped groove", "Rhomboidal with a cross groove", "Triangular"], correctAnswer: 1, hint: "الأخاديد التنموية في هذه النسخة تشكل حرف Y باللغة الإنجليزية." },
+            [span_27](start_span){ type: "mcq", question: "Which tooth is the largest in the maxillary arch?[span_27](end_span)", options: ["Maxillary central incisor", "Maxillary second molar", "Maxillary first molar", "Maxillary canine"], correctAnswer: 2, hint: "أول طاحن يظهر في الفك العلوي وهو الأكبر حجماً." },
+            [span_28](start_span){ type: "mcq", question: "Where is the Cusp of Carabelli located on the maxillary first molar?[span_28](end_span)", options: ["Disto-buccal cusp", "Mesio-lingual cusp", "Disto-lingual cusp", "Mesio-buccal cusp"], correctAnswer: 1, hint: "يقع هذا النتوء الإضافي (الخامس) على أكبر نتوء في السطح اللساني." },
+            [span_29](start_span){ type: "mcq", question: "How many roots does the permanent maxillary first molar have, and which is the longest?[span_29](end_span)", options: ["Two roots; mesial is longest", "Three roots; palatal is longest", "Three roots; mesio-buccal is longest", "Four roots; disto-buccal is longest"], correctAnswer: 1, hint: "يمتلك ثلاثة جذور، والجذر المتجه نحو سقف الحلق هو الأطول." },
+            [span_30](start_span){ type: "mcq", question: "What is the general occlusal outline of the maxillary first molar?[span_30](end_span)", options: ["Square", "Circular", "Rhomboidal", "Triangular"], correctAnswer: 2, hint: "شكله يشبه المعين الهندسي (Rhomboid)." },
+            [span_31](start_span){ type: "mcq", question: "At what age does the permanent maxillary second molar typically erupt?[span_31](end_span)", options: ["6-7 years", "12-13 years", "17-21 years", "9-10 years"], correctAnswer: 1, hint: "يُعرف أيضاً بضرس الـ 12 سنة." },
+            [span_32](start_span){ type: "mcq", question: "What is a common occlusal shape variation for the permanent maxillary third molar?[span_32](end_span)", options: ["Heart shape with three cusps", "Perfectly square", "Y-shape", "Cross shape"], correctAnswer: 0, hint: "غالباً ما يكون النتوء اللساني البعيد (disto-lingual) صغيراً جداً أو مفقوداً مما يعطيه شكل القلب." },
+            [span_33](start_span){ type: "mcq", question: "Which tooth is the largest and strongest in the mandibular arch?[span_33](end_span)", options: ["Mandibular first molar", "Mandibular second molar", "Mandibular canine", "Mandibular third molar"], correctAnswer: 0, hint: "أول طاحن سفلي يمتلك 5 نتوءات وجذرين قويين." },
+            [span_34](start_span){ type: "mcq", question: "How many well-developed cusps does the permanent mandibular first molar have?[span_34](end_span)", options: ["Three", "Four", "Five", "Six"], correctAnswer: 2, hint: "يمتلك 3 نتوءات شدقية ونتوءين لسانيين." },
+            [span_35](start_span){ type: "mcq", question: "How many roots does the permanent mandibular first molar have?[span_35](end_span)", options: ["One", "Two", "Three", "Four"], correctAnswer: 1, hint: "يمتلك جذرين عريضين (أنسي ووحشي)." },
+            [span_36](start_span){ type: "mcq", question: "Which cusp is the widest mesiodistally on the lingual aspect of the mandibular first molar?[span_36](end_span)", options: ["Mesiobuccal", "Mesiolingual", "Distolingual", "Distal"], correctAnswer: 1, hint: "أكبر نتوء في الجهة اللسانية لهذا السن." },
+            [span_37](start_span){ type: "mcq", question: "How many cusps does the permanent mandibular second molar normally have?[span_37](end_span)", options: ["Three", "Four", "Five", "Six"], correctAnswer: 1, hint: "على عكس الطاحن الأول، هذا السن يفتقر للنتوء الخامس (البعيد)." },
+            [span_38](start_span){ type: "mcq", question: "What is the occlusal groove pattern typically found on the mandibular second molar?[span_38](end_span)", options: ["Y shape", "H shape", "Cross shape", "Circular"], correctAnswer: 2, hint: "الأخاديد تتقاطع بزوايا قائمة تقريباً لتقسم السطح إلى 4 أجزاء متساوية." },
+            [span_39](start_span){ type: "mcq", question: "When does the mandibular third molar usually erupt?[span_39](end_span)", options: ["12-13 years", "14-16 years", "17-21 years", "25-30 years"], correctAnswer: 2, hint: "يُعرف بضرس العقل." },
+            [span_40](start_span)[span_41](start_span){ type: "mcq", question: "Which group of teeth is completely absent in the deciduous dentition?[span_40](end_span)[span_41](end_span)", options: ["Incisors", "Canines", "Premolars", "Molars"], correctAnswer: 2, hint: "الأسنان اللبنية تتكون من قواطع وأنياب وطواحن فقط." },
+            [span_42](start_span){ type: "mcq", question: "Which characteristic differentiates primary teeth from permanent teeth?[span_42](end_span)", options: ["They are larger in overall size", "They are usually yellower", "They have markedly more prominent cervical ridges", "Their roots are less flared"], correctAnswer: 2, hint: "الأسنان اللبنية تكون أضيق عند العنق ولها حواف عنقية بارزة." },
+            [span_43](start_span){ type: "mcq", question: "Why are the roots of deciduous molars more widely flared than permanent molars?[span_43](end_span)", options: ["To provide stronger anchorage", "To allow room for the development of permanent tooth crowns", "Because they have larger pulp chambers", "Due to intense mastication forces"], correctAnswer: 1, hint: "لإفساح المجال لتيجان الضواحك الدائمة التي تتكون تحتها." },
+            [span_44](start_span){ type: "mcq", question: "What is the 'apical foramen'?[span_44](end_span)", options: ["The widest part of the pulp chamber", "A projection in the roof of the pulp chamber", "The constricted opening near the root apex for nerves and blood supply", "A lateral branch of the root canal"], correctAnswer: 2, hint: "الثقب الصغير في نهاية الجذر الذي تمر منه الأوعية الدموية والأعصاب." },
+            [span_45](start_span){ type: "mcq", question: "In root canal classifications, what is a Type II canal?[span_45](end_span)", options: ["One canal from chamber to apex", "Two separate canals joining short of the apex to form one", "Two completely separate canals", "One canal dividing into two at the apical third"], correctAnswer: 1, hint: "يبدأ بقناتين منفصلتين لكنهما تتحدان قبل الوصول للقمة لتشكيل قناة واحدة." },
+            [span_46](start_span){ type: "mcq", question: "What defines a 'pulp horn'?[span_46](end_span)", options: ["The main body of the pulp", "Pulpal tissue occupying projections in the roof of the pulp chamber", "The complex system at the root apex", "An accessory lateral canal"], correctAnswer: 1, hint: "الامتدادات العلوية للب العصب التي تتبع شكل النتوءات (Cusps)." },
+            [span_47](start_span){ type: "mcq", question: "Which anterior tooth has the widest pulp chamber labiolingually?[span_47](end_span)", options: ["Maxillary central incisor", "Mandibular lateral incisor", "Maxillary canine", "Mandibular central incisor"], correctAnswer: 2, hint: "هذا السن هو الأقوى والأطول، وبالتالي حجرة العصب فيه تكون الأعرض من هذه الجهة." },
+            [span_48](start_span){ type: "mcq", question: "How many root canals does the permanent maxillary first premolar typically have?[span_48](end_span)", options: ["Always one", "Typically two", "Always three", "Typically three"], correctAnswer: 1, hint: "بما أنه يمتلك جذرين غالباً، فهو يمتلك قناتين." },
+            [span_49](start_span){ type: "mcq", question: "In the permanent maxillary first molar, which root occasionally has two canals?[span_49](end_span)", options: ["Palatal root", "Distobuccal root", "Mesiobuccal root", "Lingual root"], correctAnswer: 2, hint: "الجذر الأمامي الشدقي هو الأكثر تعقيداً وقد يحتوي على قناتين (MB1 و MB2)." },
+            [span_50](start_span){ type: "mcq", question: "How many pulp horns does the permanent mandibular first molar typically have?[span_50](end_span)", options: ["Three", "Four", "Five", "Six"], correctAnswer: 2, hint: "عدد القرون اللبية يطابق عادةً عدد النتوءات (Cusps)." },
+            [span_51](start_span){ type: "mcq", question: "Which tooth shows the most variation in development and form?[span_51](end_span)", options: ["Maxillary central incisor", "Mandibular first molar", "Maxillary canine", "Third molars (maxillary and mandibular)"], correctAnswer: 3, hint: "أضراس العقل هي الأكثر عرضة للتشوهات والاختلافات." },
+            [span_52](start_span)[span_53](start_span){ type: "mcq", question: "What does the FDI number '11' represent?[span_52](end_span)[span_53](end_span)", options: ["Deciduous maxillary right central incisor", "Permanent maxillary right central incisor", "Permanent mandibular left central incisor", "Primary maxillary left central incisor"], correctAnswer: 1, hint: "الرقم 1 يمثل الفك العلوي الأيمن الدائم، والـ 1 الثانية تمثل القاطع المركزي." },
+            [span_54](start_span){ type: "mcq", question: "Which tissue covers the root of the tooth?[span_54](end_span)", options: ["Enamel", "Dentin", "Cementum", "Pulp"], correctAnswer: 2, hint: "النسيج الذي يلتقي بالمينا عند خط العنق (CEJ)." },
+            [span_55](start_span){ type: "mcq", question: "Which tooth features a prominently twisted incisal edge distally?[span_55](end_span)", options: ["Maxillary central incisor", "Mandibular central incisor", "Mandibular lateral incisor", "Maxillary canine"], correctAnswer: 2, hint: "هذا الالتواء يسمح للسن باتباع انحناء الفك السفلي." },
+            [span_56](start_span){ type: "mcq", question: "What is the primary function of the canines?[span_56](end_span)", options: ["Grinding food", "Tearing food and supporting facial expressions", "Crushing food", "Initial cutting of soft food"], correctAnswer: 1, hint: "موقعها في زوايا الفم يعطيها وظيفة تمزيقية ودعامة تجميلية." },
+            [span_57](start_span){ type: "mcq", question: "Which developmental groove interrupts the mesial marginal ridge of the maxillary first premolar?[span_57](end_span)", options: ["Central developmental groove", "Buccal groove", "Lingual groove", "Distal oblique groove"], correctAnswer: 0, hint: "هذا الأخدود يعبر الحافة الإنسية للضاحك الأول العلوي بشكل مميز." },
+            [span_58](start_span){ type: "mcq", question: "The crown of the mandibular first premolar tilts in which direction?[span_58](end_span)", options: ["Buccally", "Lingually", "Mesially", "Distally"], correctAnswer: 1, hint: "التاج يميل بوضوح نحو الداخل (جهة اللسان)." },
+            [span_59](start_span){ type: "mcq", question: "Which cusps does the oblique ridge of the maxillary first molar connect?[span_59](end_span)", options: ["Mesiobuccal and Distolingual", "Mesiolingual and Distobuccal", "Mesiobuccal and Mesiolingual", "Distobuccal and Distolingual"], correctAnswer: 1, hint: "يربط بين أكبر نتوء لساني والنتوء الشدقي البعيد." },
+            [span_60](start_span){ type: "mcq", question: "Which major fossa is located mesial to the oblique ridge in a maxillary first molar?[span_60](end_span)", options: ["Distal fossa", "Central fossa", "Mesial triangular fossa", "Distal triangular fossa"], correctAnswer: 1, hint: "وهي أكبر حفرة (Fossa) في هذا السن." },
+            [span_61](start_span){ type: "mcq", question: "How many roots does the permanent mandibular second molar have?[span_61](end_span)", options: ["One", "Two", "Three", "Four"], correctAnswer: 1, hint: "مثل الطاحن الأول السفلي، يمتلك جذرين (أنسي ووحشي)." },
+            [span_62](start_span)[span_63](start_span){ type: "mcq", question: "Which deciduous tooth is larger: the first molar or the second molar?[span_62](end_span)[span_63](end_span)", options: ["The first molar is larger", "The second molar is larger", "They are exactly equal", 
+    </script>
+</body>
+</html>
+
